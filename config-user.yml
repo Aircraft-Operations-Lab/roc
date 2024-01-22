@@ -1,0 +1,64 @@
+#************************ User's configuration file for ROC *******************#
+
+
+#################################################################################
+# Configuration of the Robust Optimal Control for flight planning (ROC) Library # 
+#################################################################################  
+
+## If true, climate impact is considered for optimization
+climate_impact: true
+
+##################################
+# Definition of Objective Function
+##################################
+
+## if climate_impact: true, one needs to specify the weights of each species in the objective function
+
+## parameters used to model the inequality constraints of persistent contrail formation areas:
+
+#### inequality conditions of ice supersaturated areas modeled as sigmoid functions (if or else):
+
+# parameters of sigmoid function for relative humidity over ice: *** r_condition = 1/(1+np.exp(-r_pa*( r-r_thr))) ****
+r_thr: 0.95
+r_pa: 250
+
+# parameters of sigmoid function for temperature: *** t_condition = 1/(1+np.exp(-t_pa*(-t+t_thr))) ****
+t_pa: 10
+t_thr: 235
+
+# Species to be included in the objective function in order to represent climate effects? (1: included, 0: not included)
+daytime: 1.0
+nighttime: 0.0
+EI_contrail: 1.0
+EI_NOx: 1.0
+EI_H2O: 1.0
+EI_CO2: 1.0
+
+# How should the climate effects be considered in the optimization problem?  ('lagr': in cost functional, 'mayer': defined as additional state variables)
+climate_modeling: lagr # lagr or mayer
+
+#### How to control uncertainty ranges in climate effects
+
+# Penalizing average climate effects weighted by C * EI. 
+# C is a constant factor multiplied by EI * Climate impact (used for scaling the order with respect to fuel consumption and flight time)
+climate_avg: true
+C: 1e10
+EI: 1
+
+# Penalizing variance of climate effects weighted by EI_DP
+climate_std: false
+EI_DP: 1e5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
