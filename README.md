@@ -27,7 +27,7 @@ conda create -n env_roc python=3.9
 conda activate env_roc
 ```
 
-1. Clone or download the repository. The roost source code is available on a public GitHub repository: https://github.com/Aircraft-Operations-Lab/roc. The easiest way to obtain it is to clone the repository using git: git clone https://github.com/Aircraft-Operations-Lab/roc.git.
+1. Clone or download the repository. The roost source code is available on a public GitHub repository: https://github.com/Abolfazl-Simorgh/roc. The easiest way to obtain it is to clone the repository using git: git clone https://github.com/Abolfazl-Simorgh/roc.git.
 
 2. Locate yourself in the roost (library folder) path, and run the following line, using terminal (MacOS and Linux) or cmd (Windows), which will install all dependencies:
 ```python
