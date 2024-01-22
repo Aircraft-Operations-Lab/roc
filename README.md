@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/746768939.svg)](https://zenodo.org/doi/10.5281/zenodo.10552811)
+
 # roc: Robust Optimal Control for Flight Planning
       
 ## What is roc?
