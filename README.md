@@ -4,7 +4,7 @@
 
 The Python Library roc is a software package developed by UC3M. It is a tool for robust flight planning considering the concept of free-routing airspace. The main features of roc are: 1) integrates horizontal and vertical decision-making, 2) incorporates uncertainty in meteorological variables. In addition, roc is very generic in terms of flight planning objectives. For instance, it can be used to optimize aircraft trajectory w.r.t minimum flight time, minimum fuel burn, minimum operating cost, and minimum climate impact. 
 
-![alt text](test/Key_Figure.png)
+![alt text](test/Key_Figure.jpg)
 
 **License:** roc is released under GNU Lesser General Public License v3.0 (LGPLv3). 
 
