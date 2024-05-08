@@ -12,11 +12,17 @@ The Python Library roc is a software package developed by UC3M. It is a tool for
 
 **Support:** Support of all general technical questions on roc, i.e., installation, application, and development, will be provided by Abolfazl Simorgh (abolfazl.simorgh@uc3m.es). 
 
+**Core developer team:** Daniel González Arribas, Abolfazl Simorgh, and Manuel Soler. 
+
 Copyright (C) 2022, Universidad Carlos III de Madrid
 
 ## Citation info
 
-**Ref 1:** Simorgh, Soler, M., Dietmuller, S., Matthes, S., Yamashita, H., Castino, H., Yin, F., Robust 4D Climate-Optimal Aircraft Trajectory Planning under Weather-Induced Uncertainties: Free-Routing Airspace. Transportation Research Part D (under review).
+**Ref 1:** Simorgh, A., Soler, M., Dietmuller, S., Matthes, S., Yamashita, H., Castino, F., Yin, F. (2024).  Robust 4D climate-optimal aircraft trajectory planning under weather-induced uncertainties: free-routing airspace. Transportation Research Part D, 131.
+
+**Ref 2:** Simorgh, A., Soler, M., Castino, F., Yin, F., Cerezo-Magaña, M. (2024).  Concept of robust climate-friendly flight planning under multiple climate impact estimates. Transportation Research Part D, 131.
+
+**Ref 3:** González-Arribas, D., Soler, M., & Sanjurjo-Rivo, M. (2018). Robust aircraft trajectory planning under wind uncertainty using optimal control. Journal of Guidance, Control, and Dynamics, 41(3), 673-688.
 
 ## How to run the library
 The installation is the first step to start working with roc. In the following, the steps required to install the library are provided.
