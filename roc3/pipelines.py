@@ -2,9 +2,9 @@
 
 import numpy as np
 
-from roc3.weather import WeatherModel
-from roc3.rfp import *
-from roc3.initial_guess import *
+from .weather import WeatherModel
+from .rfp import *
+from .initial_guess import *
 
 
 class Routing2DStandard(object):
@@ -23,12 +23,14 @@ class Routing2DStandard(object):
         self.wm_det = weather_model.get_slice_with_first_member()
         self.pcfg = problem_config
         self.n_nodes = n_nodes
+        
         self.config = {
             'n_ig': 200,
-            'n_det1': 20,
-            'n_det2': 40,
-            'n_robust1': 40,
-            }
+            'n_det1': 30,
+            'n_det2': 60,
+            'n_robust1': 60,
+            }        
+        
         self.config.update(config)
         # solver_options ['mu_init'] = 10**-9
         self.solver_options = solver_options
@@ -133,6 +135,7 @@ class Routing2DStandard(object):
         self.check_trj_in_wm_bounds(new_ig, self.wm_det)
         fpp_det.build_ocp()
         trj = fpp_det.solve(new_ig, n_nodes=self.config['n_det2'], solver_options=self.solver_options)
+        # trj = fpp_det.solve(new_ig, n_nodes=self.config['n_det2'], solver_options={'max_iter':0})
         # fpp_det.autoplot()
         self.trjs_steps.append(trj)
 
@@ -142,14 +145,11 @@ class Routing2DStandard(object):
 
         new_ig = trj.get_interpolator(patch_tu=True)
         so = self.solver_options.copy()
-        so['mu_init'] = 10**-3.8
-        so['max_iter'] = 1500
-        trj = fpp.solve(new_ig, n_nodes=self.config['n_robust1'], solver_options=so)
+        so['max_iter'] = 2000
+        trj = fpp.solve(new_ig, n_nodes=self.config['n_det2'], solver_options=so)
         self.trjs_steps.append(trj)
 
-
         new_ig = trj.get_interpolator(patch_tu=True)
-        so['mu_init'] = 10**-3.8
         trj = fpp.solve(new_ig, n_nodes=self.n_nodes, solver_options=so)
         self.trjs_steps.append(trj)
         

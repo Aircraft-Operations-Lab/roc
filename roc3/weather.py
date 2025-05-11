@@ -109,8 +109,8 @@ class WeatherScenario(ABC):
         return EnvironmentState(pressure, self.T(*args), wind_vector=uv)
 
     @classmethod
-    def init_from_arrays(cls, coords, U, V, T, aCCF_H2O,r,C2,C1, pcfa, aCCF_NOx, olr,Z):
-        arrs_names = zip((U, V, T,aCCF_H2O,r,C2,C1, pcfa, aCCF_NOx, olr, Z), ('U', 'V', 'T', 'aCCF_H2O','r','C2','C1', 'pcfa', 'aCCF_NOx', 'olr', 'Z'))
+    def init_from_arrays(cls, coords, U, V, T, aCCF_H2O,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10, aCCF_NOx, olr,Z):
+        arrs_names = zip((U, V, T,aCCF_H2O,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10, aCCF_NOx, olr, Z), ('U', 'V', 'T', 'aCCF_H2O','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10', 'aCCF_NOx', 'olr', 'Z'))
         if Z is None:
             arrs_names = list(arrs_names)[:-1]
         return cls(*[cls.interpolant_builder(coords, arr, name) for arr, name in arrs_names])
@@ -208,15 +208,22 @@ class ISAWeather(WeatherScenario):
 class WeatherScenario4D(WeatherScenario):
     interpolant_builder = build_4D_interpolant
 
-    def __init__(self, Iu, Iv, IT, IaCCF_H2O, Ir, IC2, IC1, Ipcfa, IaCCF_NOx, Iolr, IZ=None):
+    def __init__(self, Iu, Iv, IT, IaCCF_H2O, Ir1,Ir2,Ir3,Ir4,Ir5,Ir6,Ir7,Ir8,Ir9,Ir10, IaCCF_NOx, Iolr, IZ=None):
         self.Iu = Iu
         self.Iv = Iv
         self.IT = IT
         self.IaCCF_H2O = IaCCF_H2O
-        self.Ir  = Ir
-        self.IC2 = IC2
-        self.IC1 = IC1
-        self.Ipcfa = Ipcfa
+        self.Ir1  = Ir1
+        self.Ir2  = Ir2
+        self.Ir3  = Ir3
+        self.Ir4  = Ir4
+        self.Ir5  = Ir5
+        self.Ir6  = Ir6
+        self.Ir7  = Ir7
+        self.Ir8  = Ir8
+        self.Ir9  = Ir9
+        self.Ir10 = Ir10
+
         self.Iolr = Iolr
         self.IaCCF_NOx = IaCCF_NOx
         self.IZ = IZ
@@ -239,17 +246,35 @@ class WeatherScenario4D(WeatherScenario):
     def aCCF_H2O(self, lat, lon, pressure, t):
         return self.IaCCF_H2O(vertcat(lat, lon, pressure, t))
         
-    def r(self, lat, lon, pressure, t):
-        return self.Ir(vertcat(lat, lon, pressure, t))  
+    def r1(self, lat, lon, pressure, t):
+        return self.Ir1(vertcat(lat, lon, pressure, t))  
 
-    def C2(self, lat, lon, pressure, t):
-        return self.IC2(vertcat(lat, lon, pressure, t))   
+    def r2(self, lat, lon, pressure, t):
+        return self.Ir2(vertcat(lat, lon, pressure, t))  
 
-    def C1(self, lat, lon, pressure, t):
-        return self.IC1(vertcat(lat, lon, pressure, t))  
+    def r3(self, lat, lon, pressure, t):
+        return self.Ir3(vertcat(lat, lon, pressure, t))          
 
-    def pcfa(self, lat, lon, pressure, t):
-        return self.Ipcfa(vertcat(lat, lon, pressure, t))  
+    def r4(self, lat, lon, pressure, t):
+        return self.Ir4(vertcat(lat, lon, pressure, t))  
+
+    def r5(self, lat, lon, pressure, t):
+        return self.Ir5(vertcat(lat, lon, pressure, t))  
+
+    def r6(self, lat, lon, pressure, t):
+        return self.Ir6(vertcat(lat, lon, pressure, t))  
+
+    def r7(self, lat, lon, pressure, t):
+        return self.Ir7(vertcat(lat, lon, pressure, t))  
+    
+    def r8(self, lat, lon, pressure, t):
+        return self.Ir8(vertcat(lat, lon, pressure, t))    
+    
+    def r9(self, lat, lon, pressure, t):
+        return self.Ir9(vertcat(lat, lon, pressure, t))    
+    
+    def r10(self, lat, lon, pressure, t):
+        return self.Ir10(vertcat(lat, lon, pressure, t))                      
 
     def aCCF_NOx(self, lat, lon, pressure, t):
         return self.IaCCF_NOx(vertcat(lat, lon, pressure, t))       
@@ -356,9 +381,9 @@ class WeatherStore_4D(WeatherStore):
         }
         self.cfg.update(weather_config)
         if self.cfg['skip_geopotential']:
-            self.variable_names = ['U', 'V', 'T', 'aCCF_H2O','r','C2','C1', 'pcfa', 'aCCF_NOx', 'olr']
+            self.variable_names = ['U', 'V', 'T', 'aCCF_H2O','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10', 'aCCF_NOx', 'olr']
         else:
-            self.variable_names = ['U', 'V', 'T', 'aCCF_H2O','r','C2','C1', 'pcfa', 'aCCF_NOx', 'olr', 'Z']
+            self.variable_names = ['U', 'V', 'T', 'aCCF_H2O','r1','r2','r3','r4','r5','r6','r7','r8','r9','r10', 'aCCF_NOx', 'olr', 'Z']
         self.npz = xr.open_dataset(path)
         self.axes = {}
         self.axes['lat'] = self.npz['lats'].values

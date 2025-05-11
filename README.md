@@ -12,8 +12,6 @@ The Python Library roc is a software package developed by UC3M. It is a tool for
 
 **Support:** Support of all general technical questions on roc, i.e., installation, application, and development, will be provided by Abolfazl Simorgh (abolfazl.simorgh@uc3m.es). 
 
-**Core developer team:** Daniel González Arribas, Abolfazl Simorgh, and Manuel Soler. 
-
 Copyright (C) 2022, Universidad Carlos III de Madrid
 
 ## Citation info
@@ -33,7 +31,7 @@ conda create -n env_roc python=3.9
 conda activate env_roc
 ```
 
-1. Clone or download the repository. The roost source code is available on a public GitHub repository: https://github.com/Abolfazl-Simorgh/roc. The easiest way to obtain it is to clone the repository using git: git clone https://github.com/Abolfazl-Simorgh/roc.git.
+1. Clone or download the repository. The roost source code is available on a public GitHub repository: https://github.com/Aircraft-Operations-Lab/roc. The easiest way to obtain it is to clone the repository using git: git clone https://github.com/Aircraft-Operations-Lab/roc.git.
 
 2. Locate yourself in the roost (library folder) path, and run the following line, using terminal (MacOS and Linux) or cmd (Windows), which will install all dependencies:
 ```python

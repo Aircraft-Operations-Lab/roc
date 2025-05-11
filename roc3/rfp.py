@@ -120,6 +120,9 @@ class FlightPlanningProblem_FreeRouting_SinglePhase(object):
         if 'tf_latest' in self.pcfg.keys():
             ocp.add_bc(latest_arrival_time, (-inf, self.pcfg['tf_latest']))
 
+        #ocp.add_bc(self.average_arrival_time - self.pcfg['t0'], (0,8000)) ####################################??????????????????????????????##################################
+
+
         ## Impose initial conditions on the newly defined states including ATR
         if self.pcfg['airspeed'] != 'constant' and self.pcfg['climate_impact'] and self.pcfg['climate_modeling'] == 'mayer' and self.pcfg['climate_std']:
             for i in range(self.n_members):
@@ -188,7 +191,6 @@ class FlightPlanningProblem_FreeRouting_SinglePhase(object):
                             std_ATR = 0
                         else:    
                             std_ATR = self.atr_std
-                            print(float(self.pcfg['C']) * float(self.pcfg['EI_DP']))
                         ocp.add_lagrangian(float(self.pcfg['C']) * float(self.pcfg['EI_DP']) * std_ATR)
                 elif self.pcfg['climate_modeling'] == 'mayer':
                     if not self.pcfg['climate_std']:
@@ -397,8 +399,6 @@ class DynamicalCore(object):
             fc = []
             atr = []
 
-            
-
             for i in range(N):
                 m_bounds = (self.apm.OEW + self.pcfg['payload'], self.apm.MTOW) #OEW: Operating empty weight, MTOW: the maximum mass
                 m.append(dm.add_state(f'm_{i}', bounds=m_bounds))
@@ -422,34 +422,61 @@ class DynamicalCore(object):
                 #fc.append(self.apm.fc_from_thrust_P_M_T(thrusts[i], P, M[i], environments[i].T))
                 
                 if self.pcfg['climate_impact']:
-
+                    index_member = 0
                     # Meteorological Data
-                    t_met    = self.wm[i].T   (lat, lon, P[i], t[i])
-                    olr_met  = self.wm[i].olr (lat, lon, P[i], t[i])
-                    r_met    = self.wm[i].r   (lat, lon, P[i], t[i]) * 100 
+                    t_met    = self.wm[index_member].T   (lat, lon, P[i], t[i])
+                    olr_met  = self.wm[index_member].olr (lat, lon, P[i], t[i])
 
                     # algorithmic climate change functions (aCCF)
-                    aCCF_NOx = self.wm[i].aCCF_NOx(lat, lon, P[i], t[i])
-                    aCCF_H2O = self.wm[i].aCCF_H2O(lat, lon, P[i], t[i])
+                    aCCF_NOx = self.wm[index_member].aCCF_NOx(lat, lon, P[i], t[i])
+                    aCCF_H2O = self.wm[index_member].aCCF_H2O(lat, lon, P[i], t[i])
 
-                    # Contrails' climate impact (aCCF * persitent contrail formation areas (PCFA))
-                    pcfa_ = pcfa (r_met, t_met, self.pcfg['r_thr'], self.pcfg['t_thr'], self.pcfg['r_pa'], self.pcfg['t_pa'])
-                    aCCF_nContrail = aCCF_nCont (t_met)   * pcfa_ 
-                    aCCF_dContrail = aCCF_dCont (olr_met) * pcfa_ 
-                    aCCF_Contrail = self.pcfg['daytime'] * aCCF_dContrail + self.pcfg['nighttime'] * aCCF_nContrail
+                    contrail = 0
+                    count = 0
+                    for k_member in range(1,11):
+                        count += 1
+                        attr_name = f"r{k_member}"
+                        r_met = getattr(self.wm[0], attr_name)(lat, lon, P[i], t[i]) * 100 
+                        # Contrails' climate impact (aCCF * persitent contrail formation areas (PCFA))                    
+                        pcfa_ = pcfa (r_met, t_met, self.pcfg['r_thr'], self.pcfg['t_thr'], self.pcfg['r_pa'], self.pcfg['t_pa'])
+                        
+                        # if 1>0:#self.pcfg['sac']:
+                        #     q_met = getattr(self.wm[0], attr_name)(lat, lon, P[i], t[i]) * 100 
+                        #     G_ = G (P[i])
+                        #     T_cr = T_crit (G_)
+                        #     elt_t_amb = e_sat_liquid (t_met)
+                        #     elt_t_cr = e_sat_liquid (T_cr)
+                        #     r_sac = r_cont (G_, t_met, T_cr, elt_t_cr, elt_t_amb)
+                        #     r_hm = rlw (q_met, P[i], elt_t_amb)
+                        #     r_i = rhi(q_met, t_met, P[i])
+                        #     pcfa_ = pcfa (r_i, t_met, self.pcfg['r_thr'], self.pcfg['t_thr'], self.pcfg['r_pa'], self.pcfg['t_pa'])
+                        #     sac_ = sac (r_sac, r_hm, t_met, T_cr)
+                            
+                        # else:
+                        r_met = getattr(self.wm[0], attr_name)(lat, lon, P[i], t[i]) * 100 
+                        pcfa_ = pcfa (r_met, t_met, self.pcfg['r_thr'], self.pcfg['t_thr'], self.pcfg['r_pa'], self.pcfg['t_pa'])
+                        sac_  = 1
+                                            
+                        aCCF_nContrail = aCCF_nCont (t_met)   * pcfa_ * sac_
+                        aCCF_dContrail = aCCF_dCont (olr_met) * pcfa_ * sac_
+                        aCCF_Contrail = self.pcfg['daytime'] * aCCF_dContrail + self.pcfg['nighttime'] * aCCF_nContrail
+                        contrail+=aCCF_Contrail
+                    contrail = contrail/11    
+                    print(count)
+                        
 
                     # Fuel flow per distance flown
                     fuelf_dist = fc[i]/gs[i]
 
                     # Net average temperature response (F-ATR20): CO2 + non-CO2
-                    ATR_NET = self.pcfg['EI_contrail'] * 1e-3 * aCCF_Contrail + fuelf_dist * (0.012 * self.pcfg['EI_NOx'] * aCCF_NOx + self.pcfg['EI_H2O'] * aCCF_H2O + self.pcfg['EI_CO2'] * 10.1 * 6.94e-16)
+                    ATR_NET = self.pcfg['EI_contrail'] * 1e-3 * contrail + fuelf_dist * (0.012 * self.pcfg['EI_NOx'] * aCCF_NOx + self.pcfg['EI_H2O'] * aCCF_H2O + self.pcfg['EI_CO2'] * 10.1 * 6.94e-16)
                     ATR_net.append (ATR_NET)
 
                     if self.pcfg['climate_impact'] and self.pcfg['climate_modeling'] == 'lagr' and self.pcfg['climate_std']:
-                        ATR_mean.append(self.pcfg['EI_contrail'] * 1e-3 * aCCF_Contrail)
+                        ATR_mean.append(self.pcfg['EI_contrail'] * 1e-3 * contrail)
         
             if self.pcfg['climate_impact'] and self.pcfg['climate_modeling'] == 'lagr' and self.pcfg['climate_std']:
-                ATR_mean_ = sum(ATR_mean [k] for k in range(self.n_members)) / self.n_members
+                ATR_mean_ =  sum(ATR_mean [k] for k in range(self.n_members)) / self.n_members
                 ATR_std   =  sum((ATR_mean [k] - ATR_mean_)**2 for k in range(self.n_members)) / self.n_members
 
         # Dynamics & path constraints

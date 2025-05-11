@@ -266,7 +266,13 @@ def patch_mass_and_altitude(fpp: FPP, trj, m0, n_nodes=8000):
         ig.p['min_atr'] = 0
         ig.p['max_atr'] = 0
     if fpp.pcfg['airspeed'] != 'constant' and fpp.pcfg['climate_impact'] and fpp.pcfg['climate_modeling'] == 'mayer' and not fpp.pcfg['climate_std']: 
-        ig.x['atr'] = I(s, atr)  
+        ig.x['atr'] = I(s, atr)
+    ig.p['wp1'] = 593.6373951051227
+    ig.p['wp2'] = 883.8547170355159
+    # ig.p['wp3'] = 1100
+    
+    
+    
     ig.p['lft'] = t[-1]
     ig.p['eft'] = t[-1]
     ig.u['tas_slope'] = I(s, tas_slopes)
@@ -498,6 +504,11 @@ def ig_2D_ortho(fpp, num_points=10):
     ig.x['tas'] = I(distances, VTas)
     ig.x['t_0'] = I(distances, times)
     ig.x['m_0'] = I(distances, masses)
+    ig.p['wp1'] = 593.6373951051227
+    ig.p['wp2'] = 883.8547170355159
+    # ig.p['wp3'] = 1100
+
+
     ig.p['lft'] = times[-1]
     ig.p['eft'] = times[-1]
     ig.u['tas_slope'] = I(distances, accelerations)
